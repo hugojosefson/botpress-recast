@@ -1,3 +1,5 @@
+import checkVersion from 'botpress-version-manager'
+
 import path from 'path'
 import fs from 'fs'
 
@@ -48,6 +50,8 @@ module.exports = {
   },
 
   init: function(bp, config) {
+    checkVersion(bp, __dirname)
+    
     wit = Wit(bp)
 
     bp.middlewares.register({

@@ -8,6 +8,16 @@
     "menuIcon": "bubble_chart",
     "webBundle": "bin/web.bundle.js"
   },
+  "keywords": [
+    "wit",
+    "botpress"
+  ],
+  "version-manager": {
+    "warn": "",
+    "botpress-check": ">= 0.1 < 1",
+    "botpress-update": "^0.x",
+    "module-downgrade": "~1.0.x"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "node webpack.js --watch",
@@ -47,6 +57,7 @@
     "webpack-node-externals": "^1.5.4"
   },
   "dependencies": {
+    "botpress-version-manager": "^1.0.2",
     "moment": "^2.17.1",
     "node-wit": "^4.2.0"
   }
