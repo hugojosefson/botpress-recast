@@ -1,88 +1,108 @@
-import checkVersion from 'botpress-version-manager'
+import R from 'ramda';
+import checkVersion from 'botpress-version-manager';
+import Recast from './recast';
+import {byConfidence, renameSlugToValue} from './transform-intents';
 
-import path from 'path'
-import fs from 'fs'
-
-import Wit from './wit'
-
-let wit = null
+let recast = null;
 
 const incomingMiddleware = (event, next) => {
-  if (event.type === 'message') {
-    if (event.bp.wit.mode === 'understanding') {
-      Object.assign(wit.getUserContext(event.user.id).context, {
-        botpress_platform: event.platform,
-        botpress_type: event.type
-      })
-      wit.getEntities(event.user.id, event.text)
-      .then(entities => {
-        event.wit = { entities, context: wit.getUserContext(event.user.id) }
-        next()
-      })
-      .catch(err => next(err))
+    if (event.type === 'message') {
+        if (event.bp.recast.mode === 'understanding') {
+            Object.assign(recast.getUserContext(event.user.id).context, {
+                botpress_platform: event.platform,
+                botpress_type: event.type
+            });
+            recast.analyseText(event.user.id, event.text)
+                .then(({intents, entities, act, sentiment, language}) => {
+
+                    event.recast = {
+                        intents: R.compose(R.sort(byConfidence), R.map(renameSlugToValue), R.defaultTo([]))(intents),
+                        entities: R.compose(R.map(R.sort(byConfidence)), R.defaultTo({}))(entities),
+                        act,
+                        sentiment,
+                        language,
+                        context: recast.getUserContext(event.user.id)
+                    };
+                    event.bp.logger.verbose(`[Recast.AI].analyseText: event.recast = ${JSON.stringify(event.recast, null, 2)}`);
+                    next();
+                })
+                .catch(err => next(err));
+        } else {
+            Object.assign(recast.getUserContext(event.user.id).context, {
+                botpress_platform: event.platform,
+                botpress_type: event.type
+            });
+
+            recast.converseText(event.user.id, event.text)
+                .then(({intents, entities, act, sentiment, language, action, replies}) => {
+                    event.recast = {
+                        intents: R.compose(R.sort(byConfidence), R.map(renameSlugToValue, R.defaultTo([])))(intents),
+                        entities: R.compose(R.map(R.sort(byConfidence)), R.defaultTo({}))(entities),
+                        act,
+                        sentiment,
+                        language,
+                        action,
+                        replies,
+                        context: recast.getUserContext(event.user.id)
+                    };
+                    event.bp.logger.verbose(`[Recast.AI].converseText: event.recast = ${JSON.stringify(event.recast, null, 2)}`);
+                })
+                .catch(err => next(err));
+        }
     } else {
-      Object.assign(wit.getUserContext(event.user.id).context, {
-        botpress_platform: event.platform,
-        botpress_type: event.type
-      })
-
-      wit.runActions(event.user.id, event.text)
-      .then(() => {
-        event.wit = { run: true, context: wit.getUserContext(event.user.id) }
-      })
-      .catch(err => next(err))
+        next();
     }
-  } else {
-    next()
-  }
-}
+};
 
-module.exports = {
+export default {
+    config: {
+        accessToken: {
+            type: 'string',
+            required: true,
+            env: 'RECAST_TOKEN',
+            default: '<YOUR TOKEN HERE>'
+        },
+        selectedMode: {
+            type: 'choice',
+            validation: ['understanding', 'conversation'],
+            required: true,
+            default: 'understanding'
+        }
+    },
 
-  config: {
-    accessToken: { type: 'string', required: true, env: 'WIT_TOKEN', default: '<YOUR TOKEN HERE>' },
-    selectedMode: {
-      type: 'choice',
-      validation: ['understanding', 'stories'],
-      required: true,
-      default: 'understanding'
+    init: (bp, configurator) => {
+        checkVersion(bp, __dirname);
+
+        recast = Recast(bp);
+
+        bp.middlewares.register({
+            name: 'recast.incoming',
+            module: 'botpress-recast',
+            type: 'incoming',
+            handler: incomingMiddleware,
+            order: 10,
+            description: 'Understands entities from incoming message and suggests or executes actions.'
+        });
+
+        configurator.loadAll()
+            .then(config => recast.setConfiguration(config));
+    },
+
+    ready: (bp, configurator) => {
+        const router = bp.getRouter('botpress-recast');
+
+        router.get('/config', (req, res) => {
+            configurator.loadAll()
+                .then(c => res.send(c));
+        });
+
+        router.post('/config', (req, res) => {
+            const {accessToken, selectedMode} = req.body;
+
+            configurator.saveAll({accessToken, selectedMode})
+                .then(() => configurator.loadAll())
+                .then(c => recast.setConfiguration(c))
+                .then(() => res.sendStatus(200));
+        });
     }
-  },
-
-  init: function(bp, config) {
-    checkVersion(bp, __dirname)
-    
-    wit = Wit(bp)
-
-    bp.middlewares.register({
-      name: 'wit.incoming',
-      module: 'botpress-wit',
-      type: 'incoming',
-      handler: incomingMiddleware,
-      order: 10,
-      description: 'Understands entities from incoming message and suggests or executes actions.'
-    })
-
-    config.loadAll()
-    .then(c => wit.setConfiguration(c))
-  },
-
-  ready: function(bp, config) {
-
-    const router = bp.getRouter('botpress-wit')
-
-    router.get('/config', (req, res) => {
-      config.loadAll()
-      .then(c => res.send(c))
-    })
-
-    router.post('/config', (req, res) => {
-      const { accessToken, selectedMode } = req.body
-
-      config.saveAll({ accessToken, selectedMode })
-      .then(() => config.loadAll())
-      .then(c => wit.setConfiguration(c))
-      .then(() => res.sendStatus(200))
-    })
-  }
-}
+};

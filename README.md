@@ -1,47 +1,49 @@
-# botpress-wit
+# botpress-recast
 
-The easiest way to create a Wit.ai bot with Botpress
+The easiest way to create a Recast.AI bot with Botpress.
 
 ## Getting started
 
 ```
-botpress install wit
+botpress install recast
 ```
 
-The Wit.ai module should now be available in your bot UI
+The Recast.AI module should now be available in your bot UI.
 
 ## Features
 
-This module has two modes: **Understanding** (message API) and **Stories** (converse API).
+This module has two modes: **Understanding** (message API) and **Conversation** (converse API).
 
 ### Understanding
 
-This mode will inject understanding metadata inside incoming messages through the Wit.ai middleware.
+This mode will inject understanding metadata inside incoming messages through the Recast.AI middleware.
 
-Events will have a `wit` property populated with the extracted `entities` and the `context`.
+Events will have a `recast` property populated with the extracted `intents`, `entities`, `act`, `sentiment` and the `context`.
 
 **Tip:** Use this mode if you want to handle the conversation flow yourself and only want to extract entities from incoming text. This is great for programmers.
 
 ```js
-bp.hear({'wit.entities.intent[0].value': 'weather'}, (event, next) => {
+bp.hear({'recast.entities.intent[0].value': 'weather'}, (event, next) => {
   console.log('>> Weather')
   bp.messenger.sendText(event.user.id, 'Weather intent')
 })
 ```
 
-### Stories
+### Conversation
 
-This mode will run your Wit.ai stories automatically given that you defined the **Actions** in botpress.
+This mode will run your Recast.AI conversation actions automatically given that you defined the **Actions** in botpress.
 
-For more information about Actions and how they are run, make sure to read [node-wit](https://github.com/wit-ai/node-wit)'s documentation.
+Events will have a `recast` property populated with the extracted `intents`, `entities`, `act`, `sentiment`, `action` , `reply` and the `context`.
 
-**Tip:** Use this mode if you created a conversation flow on Wit.ai's User Interface and want it to run automatically in your bot. This is great for non-programmers.
+For more information about Conversations and how they are run, make sure to read [recastai's documentation on conversations](https://github.com/RecastAI/SDK-NodeJS/wiki/Manage-your-conversation).
+
+**Tip:** Use this mode if you created a conversation flow on Recast.AI's User Interface under the *Build* tab, and want it to run automatically in your bot. This is great for non-programmers.
 
 #### Example
 
 ```js
-// Implement your Actions like this
-bp.wit.actions['getWeather'] = request => {
+// Implement your Conversation Actions like this
+bp.recast.actions['getWeather'] = request => {
   return new Promise((resolve, reject) => {
     bp.logger.info('Get Weather called', request)
     // Do something here
@@ -49,8 +51,8 @@ bp.wit.actions['getWeather'] = request => {
   })
 }
 
-// You need to call this method once you are done implementing the Actions
-bp.wit.reinitializeClient()
+// You need to call this method once you are done implementing the Conversation Actions
+bp.recast.reinitializeClient()
 ```
 
 
@@ -64,4 +66,4 @@ Get an invite and join us now! 👉[https://slack.botpress.io](https://slack.bot
 
 ## License
 
-botpress-wit is licensed under [AGPL-3.0](/LICENSE)
+botpress-recast is licensed under [AGPL-3.0](/LICENSE)

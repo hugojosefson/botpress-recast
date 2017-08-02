@@ -20,33 +20,33 @@ const documentation = {
   understanding: `
   ### Understanding
 
-  This mode will inject understanding metadata inside incoming messages through the Wit.ai middleware.
+  This mode will inject understanding metadata inside incoming messages through the Recast.AI middleware.
 
-  Events will have a \`wit\` property populated with the extracted \`entities\` and the \`context\`.
+  Events will have a \`recast\` property populated with the extracted \`entities\` and the \`context\`.
 
   **Tip:** Use this mode if you want to handle the conversation flow yourself and only want to extract entities from incoming text. This is great for programmers.
 
   \`\`\`js
-  bp.hear({'wit.entities.intent[0].value': 'weather'}, (event, next) => {
+  bp.hear({'recast.entities.intent[0].value': 'weather'}, (event, next) => {
     console.log('>> Weather')
     bp.messenger.sendText(event.user.id, 'Weather intent')
   })
   \`\`\`
   `
   ,
-  stories: `### Stories
+  conversation: `### Conversation
 
-  This mode will run your Wit.ai stories automatically given that you defined the **Actions** in botpress.
+  This mode will run your Recast.AI conversation actions automatically given that you defined the **Actions** in botpress.
 
-  For more information about Actions and how they are run, make sure to read [node-wit](https://github.com/wit-ai/node-wit)'s documentation.
+  For more information about conversations and how they are run, make sure to read [recastai's documentation on conversations](https://github.com/RecastAI/SDK-NodeJS/wiki/Manage-your-conversation).
 
-  **Tip:** Use this mode if you created a conversation flow on Wit.ai's User Interface and want it to run automatically in your bot. This is great for non-programmers.
+  **Tip:** Use this mode if you created a conversation flow on Recast.AI's User Interface under the *Build* tab, and want it to run automatically in your bot. This is great for non-programmers.
 
   #### Example
 
   \`\`\`js
-  // Implement your Actions like this
-  bp.wit.actions['getWeather'] = request => {
+  // Implement your Conversation Actions like this
+  bp.recast.actions['getWeather'] = request => {
     return new Promise((resolve, reject) => {
       bp.logger.info('Get Weather called', request)
       // Do something here
@@ -54,8 +54,8 @@ const documentation = {
     })
   }
 
-  // You need to call this method once you are done implementing the Actions
-  bp.wit.reinitializeClient()
+  // You need to call this method once you are done implementing the Conversation Actions
+  bp.recast.reinitializeClient()
   \`\`\`
   `
 }
@@ -71,7 +71,7 @@ export default class TemplateModule extends React.Component {
       initialStateHash: null,
       modes: {
         understanding: 'Understanding mode is...',
-        stories: 'Stories mode is...'
+        conversation: 'Conversation mode is...'
       }
     }
 
@@ -92,7 +92,7 @@ export default class TemplateModule extends React.Component {
   }
 
   componentDidMount() {
-    this.getAxios().get('/api/botpress-wit/config')
+    this.getAxios().get('/api/botpress-recast/config')
     .then((res) => {
       this.setState({
         loading: false,
@@ -120,7 +120,7 @@ export default class TemplateModule extends React.Component {
   handleSaveChanges() {
     this.setState({ loading:true })
 
-    return this.getAxios().post('/api/botpress-wit/config', {
+    return this.getAxios().post('/api/botpress-recast/config', {
       accessToken: this.state.accessToken,
       selectedMode: this.state.selectedMode
     })
@@ -134,7 +134,7 @@ export default class TemplateModule extends React.Component {
       this.setState({
         message: {
           type: 'danger',
-          text: 'An error occured during you were trying to save configuration: ' + err.response.data.message
+          text: 'An error occurred while you were trying to save configuration: ' + err.response.data.message
         },
         loading: false,
         initialStateHash: this.getStateHash()
@@ -179,7 +179,7 @@ export default class TemplateModule extends React.Component {
           </Col>
           <Col sm={8}>
             {this.renderRadioButton('Understanding', 'understanding')}
-            {this.renderRadioButton('Stories', 'stories')}
+            {this.renderRadioButton('Conversation', 'conversation')}
           </Col>
         </FormGroup>
       </Row>
@@ -216,7 +216,7 @@ export default class TemplateModule extends React.Component {
     }
 
     return (
-      <Grid className={style.wit}>
+      <Grid className={style.recast}>
         <Row>
           <Col md={8} mdOffset={2}>
             {this.renderMessageAlert()}
