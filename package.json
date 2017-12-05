@@ -8,18 +8,6 @@
     "menuIcon": "custom",
     "webBundle": "bin/web.bundle.js"
   },
-  "keywords": [
-    "recast",
-    "recastai",
-    "recast.ai",
-    "botpress"
-  ],
-  "version-manager": {
-    "warn": "",
-    "botpress-check": ">= 0.1",
-    "botpress-update": "^1.0",
-    "module-downgrade": "~1.0.x"
-  },
   "scripts": {
     "test": "npm run lint && npm run mocha",
     "lint": "eslint ./*.js src/",
@@ -35,6 +23,18 @@
   "homepage": "https://github.com/hugojosefson/botpress-recast",
   "author": "Hugo Josefson <hugo@josefson.org>",
   "license": "AGPL-3.0",
+  "keywords": [
+    "recast",
+    "recastai",
+    "recast.ai",
+    "botpress"
+  ],
+  "version-manager": {
+    "warn": "",
+    "botpress-check": ">= 0.1",
+    "botpress-update": "^1.0",
+    "module-downgrade": "~1.0.x"
+  },
   "devDependencies": {
     "babel-core": "^6.25.0",
     "babel-eslint": "^7.2.3",
