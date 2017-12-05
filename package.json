@@ -10,11 +10,18 @@
   },
   "scripts": {
     "test": "npm run lint && npm run mocha",
-    "lint": "eslint ./*.js src/",
+    "lint": "standard --verbose | snazzy",
     "mocha": "NODE_ENV=test mocha --compilers js:babel-register --recursive",
     "watch": "webpack --watch --color",
     "compile": "webpack --color",
-    "prepare": "rimraf bin && npm run compile"
+    "prepare": "rimraf bin && npm run compile",
+    "precommit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{mjs,js,jsx}": [
+      "standard --fix",
+      "git add"
+    ]
   },
   "repository": {
     "type": "git",
@@ -52,7 +59,9 @@
     "eslint-plugin-react": "^7.1.0",
     "extract-text-webpack-plugin": "^3.0.0",
     "file-loader": "^0.11.2",
+    "husky": "^0.14.3",
     "json-loader": "^0.5.7",
+    "lint-staged": "^6.0.0",
     "mocha": "^3.5.0",
     "node-sass": "^4.5.3",
     "react": "^15.6.1",
@@ -61,6 +70,8 @@
     "react-markdown": "^2.5.0",
     "rimraf": "^2.6.1",
     "sass-loader": "^6.0.6",
+    "snazzy": "^7.0.0",
+    "standard": "^10.0.3",
     "style-loader": "^0.18.2",
     "webpack": "^3.4.1",
     "webpack-node-externals": "^1.6.0"

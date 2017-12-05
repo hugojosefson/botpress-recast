@@ -1,6 +1,6 @@
-import R from 'ramda';
+import R from 'ramda'
 
-export const byConfidence = R.descend(R.prop('confidence'));
+export const byConfidence = R.descend(R.prop('confidence'))
 
 /**
  * Creates a new object with the own properties of the provided object, but the
@@ -16,6 +16,6 @@ export const byConfidence = R.descend(R.prop('confidence'));
  */
 const renameKeys = R.curry((keysMap, obj) =>
     R.reduce((acc, key) => R.assoc(keysMap[key] || key, obj[key], acc), {}, R.keys(obj))
-);
+)
 
-export const renameSlugToValue = renameKeys({slug: 'value'});
+export const renameSlugToValue = renameKeys({slug: 'value'})

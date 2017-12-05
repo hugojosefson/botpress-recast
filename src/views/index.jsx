@@ -8,7 +8,6 @@ import {
   FormGroup,
   FormControl,
   Alert,
-  FieldGroup,
   Button
 } from 'react-bootstrap'
 
@@ -32,8 +31,7 @@ const documentation = {
     bp.messenger.sendText(event.user.id, 'Weather intent')
   })
   \`\`\`
-  `
-  ,
+  `,
   conversation: `### Conversation
 
   This mode will run your Recast.AI conversation actions automatically given that you defined the **Actions** in botpress.
@@ -61,8 +59,7 @@ const documentation = {
 }
 
 export default class TemplateModule extends React.Component {
-
-  constructor(props) {
+  constructor (props) {
     super(props)
 
     this.state = {
@@ -83,15 +80,15 @@ export default class TemplateModule extends React.Component {
     this.handleRadioChange = this.handleRadioChange.bind(this)
   }
 
-  getStateHash() {
+  getStateHash () {
     return this.state.accessToken + ' ' + this.state.selectedMode
   }
 
-  getAxios() {
+  getAxios () {
     return this.props.bp.axios
   }
 
-  componentDidMount() {
+  componentDidMount () {
     this.getAxios().get('/api/botpress-recast/config')
     .then((res) => {
       this.setState({
@@ -105,20 +102,20 @@ export default class TemplateModule extends React.Component {
     })
   }
 
-  handleAccesTokenChange(event) {
+  handleAccesTokenChange (event) {
     this.setState({
       accessToken: event.target.value
     })
   }
 
-  handleRadioChange(event) {
+  handleRadioChange (event) {
     this.setState({
       selectedMode: event.target.value
     })
   }
 
-  handleSaveChanges() {
-    this.setState({ loading:true })
+  handleSaveChanges () {
+    this.setState({ loading: true })
 
     return this.getAxios().post('/api/botpress-recast/config', {
       accessToken: this.state.accessToken,
@@ -142,7 +139,7 @@ export default class TemplateModule extends React.Component {
     })
   }
 
-  renderAccessToken() {
+  renderAccessToken () {
     return (
       <Row>
         <FormGroup>
@@ -150,18 +147,18 @@ export default class TemplateModule extends React.Component {
             Access Token
           </Col>
           <Col sm={8}>
-            <FormControl type="text" value={this.state.accessToken} onChange={this.handleAccesTokenChange}/>
+            <FormControl type='text' value={this.state.accessToken} onChange={this.handleAccesTokenChange} />
           </Col>
         </FormGroup>
       </Row>
     )
   }
 
-  renderRadioButton(label, key, props) {
+  renderRadioButton (label, key, props) {
     return (
       <span className={style.radio} key={key}>
         <label>
-          <input type="radio" value={key}
+          <input type='radio' value={key}
             checked={this.state.selectedMode === key}
             onChange={this.handleRadioChange} />
           {label}
@@ -170,7 +167,7 @@ export default class TemplateModule extends React.Component {
     )
   }
 
-  renderMode() {
+  renderMode () {
     return (
       <Row>
         <FormGroup>
@@ -186,7 +183,7 @@ export default class TemplateModule extends React.Component {
     )
   }
 
-  renderExplication() {
+  renderExplication () {
     return (
       <Row className={style.explication}>
         <Col sm={12}>
@@ -196,21 +193,21 @@ export default class TemplateModule extends React.Component {
     )
   }
 
-  renderMessageAlert() {
+  renderMessageAlert () {
     return this.state.message
       ? <Alert bsStyle={this.state.message.type}>{this.state.message.text}</Alert>
       : null
   }
 
-  renderSaveButton() {
+  renderSaveButton () {
     const opacityStyle = (this.state.initialStateHash && this.state.initialStateHash !== this.getStateHash())
-      ? {opacity:1}
-      : {opacity:0}
+      ? {opacity: 1}
+      : {opacity: 0}
 
-    return <Button style={opacityStyle} bsStyle="success" onClick={this.handleSaveChanges}>Save</Button>
+    return <Button style={opacityStyle} bsStyle='success' onClick={this.handleSaveChanges}>Save</Button>
   }
 
-  render() {
+  render () {
     if (this.state.loading) {
       return <h4>Module is loading...</h4>
     }
@@ -220,14 +217,14 @@ export default class TemplateModule extends React.Component {
         <Row>
           <Col md={8} mdOffset={2}>
             {this.renderMessageAlert()}
-            <Panel className={style.panel} header="Settings">
+            <Panel className={style.panel} header='Settings'>
               {this.renderSaveButton()}
               <div className={style.settings}>
                 {this.renderAccessToken()}
                 {this.renderMode()}
               </div>
             </Panel>
-            <Panel header="Documentation">
+            <Panel header='Documentation'>
               {this.renderExplication()}
             </Panel>
           </Col>
