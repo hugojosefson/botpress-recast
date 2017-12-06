@@ -45,19 +45,19 @@ const reinitializeClient = bp => () => {
 }
 
 const initializeClient = (bp, config) => {
-  client = new RecastAi(config.accessToken).request
+  client = new RecastAi(config.accessToken)
 }
 
 const analyseText = (userId, message) => {
   getUserContext(userId)
-  return client.analyseText(message)
+  return client.request.analyseText(message)
 }
 
 const converseText = (userId, message) => {
   const { sessionId } = getUserContext(userId)
-  return client.converseText(message, { conversationToken: sessionId })
+  return client.build.dialog({type: 'text', content: message}, {conversationId: sessionId})
         .then(res => {
-          getUserContext(userId).context = res.memory
+          getUserContext(userId).context = res.conversation.memory
           return res
         })
 }
