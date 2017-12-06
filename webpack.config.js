@@ -2,7 +2,7 @@ const path = require('path')
 const nodeExternals = require('webpack-node-externals')
 const pkg = require('./package.json')
 
-const cleanVersion = semver => semver.replace(/[>=]/g, '')
+const cleanVersion = semver => semver.replace(/[>=<]/g, '').split(' ')[0]
 
 const commonConfig = {
   context: path.resolve(__dirname, 'src'),
