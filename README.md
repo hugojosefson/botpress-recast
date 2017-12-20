@@ -1,5 +1,7 @@
 # botpress-recast
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/hugojosefson/botpress-recast.svg)](https://greenkeeper.io/)
+
 The easiest way to create a Recast.AI bot with Botpress.
 
 ## Getting started
