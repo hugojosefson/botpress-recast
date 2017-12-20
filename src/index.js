@@ -46,7 +46,7 @@ const incomingMiddleware = (event, next) => {
           // event.bp.logger.verbose(JSON.stringify({intents, replies}, null, 2))
         })
         .catch(err => next(err))
-    } else {
+    } else if (event.bp.recast.mode === 'dialog') {
       Object.assign(recast.getUserContext(event.user.id).context, {
         botpress_platform: event.platform,
         botpress_type: event.type
@@ -65,6 +65,8 @@ const incomingMiddleware = (event, next) => {
           }
         })
         .catch(err => next(err))
+    } else {
+      next(new Error('Unknown mode: ' + event.bp.recast.mode))
     }
   } else {
     next()
@@ -81,7 +83,7 @@ export default {
     },
     selectedMode: {
       type: 'choice',
-      validation: ['understanding', 'conversation', 'dialog'],
+      validation: ['understanding'],
       required: true,
       default: 'understanding'
     }

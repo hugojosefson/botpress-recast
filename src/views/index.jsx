@@ -21,39 +21,18 @@ const documentation = {
 
   This mode will inject understanding metadata inside incoming messages through the Recast.AI middleware.
 
-  Events will have a \`recast\` property populated with the extracted \`entities\` and the \`context\`.
+  Events will have a \`recast\` property populated with the extracted \`intents\`, \`entities\`, \`act\`, \`sentiment\` and the \`context\`.
 
   **Tip:** Use this mode if you want to handle the conversation flow yourself and only want to extract entities from incoming text. This is great for programmers.
 
   \`\`\`js
-  bp.hear({'recast.entities.intent[0].value': 'weather'}, (event, next) => {
-    console.log('>> Weather')
-    bp.messenger.sendText(event.user.id, 'Weather intent')
-  })
-  \`\`\`
-  `,
-  conversation: `### Conversation
-
-  This mode will run your Recast.AI conversation actions automatically given that you defined the **Actions** in botpress.
-
-  For more information about conversations and how they are run, make sure to read [recastai's documentation on conversations](https://github.com/RecastAI/SDK-NodeJS/wiki/Manage-your-conversation).
-
-  **Tip:** Use this mode if you created a conversation flow on Recast.AI's User Interface under the *Build* tab, and want it to run automatically in your bot. This is great for non-programmers.
-
-  #### Example
-
-  \`\`\`js
-  // Implement your Conversation Actions like this
-  bp.recast.actions['getWeather'] = request => {
-    return new Promise((resolve, reject) => {
-      bp.logger.info('Get Weather called', request)
-      // Do something here
-      resolve(request.context)
-    })
-  }
-
-  // You need to call this method once you are done implementing the Conversation Actions
-  bp.recast.reinitializeClient()
+  bp.hear(
+    {'recast.intents[0].value': 'weather'},
+    (event, next) => {
+      console.log('>> Weather')
+      event.reply(...t('Weather intent'))
+    }
+  )
   \`\`\`
   `
 }
@@ -67,9 +46,7 @@ export default class TemplateModule extends React.Component {
       message: null,
       initialStateHash: null,
       modes: {
-        understanding: 'Understanding mode is...',
-        conversation: 'Conversation mode is...',
-        dialog: 'Dialog mode is...'
+        understanding: 'Understanding mode is...'
       }
     }
 
@@ -177,8 +154,6 @@ export default class TemplateModule extends React.Component {
           </Col>
           <Col sm={8}>
             {this.renderRadioButton('Understanding', 'understanding')}
-            {this.renderRadioButton('Conversation', 'conversation')}
-            {this.renderRadioButton('Dialog', 'dialog')}
           </Col>
         </FormGroup>
       </Row>
