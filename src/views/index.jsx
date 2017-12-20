@@ -30,7 +30,7 @@ const documentation = {
     {'recast.intents[0].value': 'weather'},
     (event, next) => {
       console.log('>> Weather')
-      event.reply(...t('Weather intent'))
+      event.reply('#weather')
     }
   )
   \`\`\`

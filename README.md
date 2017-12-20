@@ -29,7 +29,8 @@ Events will have a `recast` property populated with the extracted `intents`, `en
     {'recast.intents[0].value': 'weather'},
     (event, next) => {
       console.log('>> Weather')
-      event.reply(...t('Weather intent'))
+      event.reply('#weather')
+
     }
   )
 ```
