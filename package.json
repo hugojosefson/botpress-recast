@@ -79,6 +79,7 @@
   },
   "dependencies": {
     "botpress-version-manager": "^1.0.4",
+    "circular-json": "^0.5.1",
     "moment": "^2.20.1",
     "ramda": "^0.25.0",
     "recastai": "^3.4.1"
