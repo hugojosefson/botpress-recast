@@ -30,8 +30,8 @@ const setConfiguration = bp => config => {
   bp.recast.mode = config.selectedMode
   latestConfig = config
 
-  if (bp.recast.mode === 'conversation' && !bp.recast.actions.send) {
-    bp.logger.debug('[Recast.AI] In <conversation> mode, Recast must be initialized manually')
+  if (['conversation', 'dialog'].includes(bp.recast.mode) && !bp.recast.actions.send) {
+    bp.logger.debug(`[Recast.AI] In <${bp.recast.mode}> mode, Recast must be initialized manually`)
     return
   }
 
@@ -54,6 +54,15 @@ const analyseText = (userId, message) => {
 }
 
 const converseText = (userId, message) => {
+  const { sessionId } = getUserContext(userId)
+  return client.request.converseText(message, { conversationToken: sessionId })
+        .then(res => {
+          getUserContext(userId).context = res.memory
+          return res
+        })
+}
+
+const dialogText = (userId, message) => {
   const { sessionId } = getUserContext(userId)
   return client.build.dialog({type: 'text', content: message}, {conversationId: sessionId})
         .then(res => {
@@ -95,6 +104,7 @@ module.exports = bp => {
     setConfiguration: setConfiguration(bp),
     analyseText,
     converseText,
+    dialogText,
     getUserContext
   }
 }

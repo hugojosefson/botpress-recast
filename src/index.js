@@ -25,13 +25,34 @@ const incomingMiddleware = (event, next) => {
           next()
         })
         .catch(err => next(err))
-    } else {
+    } else if (event.bp.recast.mode === 'conversation') {
       Object.assign(recast.getUserContext(event.user.id).context, {
         botpress_platform: event.platform,
         botpress_type: event.type
       })
 
       recast.converseText(event.user.id, event.text)
+        .then(({intents, entities, act, sentiment, language, action, replies}) => {
+          event.recast = {
+            intents: R.compose(R.sort(byConfidence), R.map(renameSlugToValue, R.defaultTo([])))(intents),
+            entities: R.compose(R.map(R.sort(byConfidence)), R.defaultTo({}))(entities),
+            act,
+            sentiment,
+            language,
+            action,
+            replies,
+            context: recast.getUserContext(event.user.id)
+          }
+          // event.bp.logger.verbose(JSON.stringify({intents, replies}, null, 2))
+        })
+        .catch(err => next(err))
+    } else {
+      Object.assign(recast.getUserContext(event.user.id).context, {
+        botpress_platform: event.platform,
+        botpress_type: event.type
+      })
+
+      recast.dialogText(event.user.id, event.text)
         .then(({messages, nlp: {intents, entities, act, sentiment, language}}) => {
           event.recast = {
             intents: R.compose(R.sort(byConfidence), R.map(renameSlugToValue, R.defaultTo([])))(intents),
@@ -60,7 +81,7 @@ export default {
     },
     selectedMode: {
       type: 'choice',
-      validation: ['understanding', 'conversation'],
+      validation: ['understanding', 'conversation', 'dialog'],
       required: true,
       default: 'understanding'
     }

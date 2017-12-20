@@ -68,7 +68,8 @@ export default class TemplateModule extends React.Component {
       initialStateHash: null,
       modes: {
         understanding: 'Understanding mode is...',
-        conversation: 'Conversation mode is...'
+        conversation: 'Conversation mode is...',
+        dialog: 'Dialog mode is...'
       }
     }
 
@@ -177,6 +178,7 @@ export default class TemplateModule extends React.Component {
           <Col sm={8}>
             {this.renderRadioButton('Understanding', 'understanding')}
             {this.renderRadioButton('Conversation', 'conversation')}
+            {this.renderRadioButton('Dialog', 'dialog')}
           </Col>
         </FormGroup>
       </Row>
