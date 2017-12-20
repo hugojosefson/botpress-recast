@@ -14,7 +14,7 @@ The Recast.AI module should now be available in your bot UI.
 
 ## Features
 
-This module currently only has one mode: **Understanding** (message API).
+This module currently only has one mode: **Understanding** (message API / NLP).
 
 ### Understanding
 
